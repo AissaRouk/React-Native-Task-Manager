@@ -4,40 +4,33 @@ import {
   orangeColor,
   whiteColor,
 } from "../Utils/styles";
-import { View, Text, StyleSheet } from "react-native";
+import { Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Day } from "../Types/Types";
 
 export default function DayComponent({
   day,
   highlighted,
+  setCurrentDay,
 }: {
   day: Day;
   highlighted?: boolean;
+  setCurrentDay: (day: Day) => void;
 }) {
   return (
-    <View
+    <TouchableOpacity
       style={[
         styles.container,
-        { backgroundColor: highlighted ? orangeColor : greyColor },
+        {
+          backgroundColor: highlighted ? orangeColor : blackColor,
+        },
       ]}
+      onPress={() => setCurrentDay(day)}
     >
-      <Text
-        style={[
-          styles.dayText,
-          { color: highlighted ? whiteColor : blackColor },
-        ]}
-      >
-        {day.day}
-      </Text>
-      <Text
-        style={[
-          styles.dayOfWeekText,
-          { color: highlighted ? whiteColor : blackColor },
-        ]}
-      >
+      <Text style={[styles.dayText, { color: whiteColor }]}>{day.day}</Text>
+      <Text style={[styles.dayOfWeekText, { color: whiteColor }]}>
         {day.dayOfTheWeek}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
