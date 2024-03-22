@@ -1,23 +1,30 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import getRandomColor from "../Utils/getRandomColor";
+import { Task } from "../Types/Types";
 
-export default function TaskComponent() {
+export default function TaskComponent({ task }: { task: Task }) {
   const backgroundColor = getRandomColor();
+
+  // Function to format time as hh:mm
+  const formatTime = (date: Date) => {
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
 
   return (
     <View style={styles.container}>
       <View style={[styles.taskView, { backgroundColor }]}>
-        <Text style={styles.title}>Title</Text>
-        <Text style={styles.content}>
-          Content content content content content content content content
-          content content content content
+        <Text style={styles.title}>{task.name}</Text>
+        <Text style={styles.content}>{task.content}</Text>
+        <Text style={styles.time}>
+          {formatTime(task.hourOfStarting)} - {formatTime(task.hourOfEnding)}
         </Text>
-        <Text style={styles.time}>9:00 AM - 10:00 AM</Text>
       </View>
       <View style={styles.timeView}>
         <View style={[styles.dot, { backgroundColor }]} />
-        <Text style={styles.timeText}>9:00 AM</Text>
+        <Text style={styles.timeText}>{formatTime(task.hourOfStarting)}</Text>
       </View>
     </View>
   );
