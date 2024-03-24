@@ -1,12 +1,11 @@
 import { ScrollView, View, Text } from "react-native";
 import { Day, Task } from "../Types/Types";
 import TaskComponent from "./TaskComponent";
+import { useContext } from "react";
+import { AppContext } from "../Context/Context";
 
-export default function TasksViewComponent({
-  currentDay,
-}: {
-  currentDay: Day;
-}) {
+export default function TasksViewComponent() {
+  const { currentDay } = useContext(AppContext);
   return (
     <View
       style={{
@@ -26,9 +25,9 @@ export default function TasksViewComponent({
             marginBottom: 20,
           }}
         >
-          {currentDay.tasks.length || "No"} Tasks today
+          {currentDay?.tasks.length || "No"} Tasks today
         </Text>
-        {currentDay.tasks.map((item: Task) => (
+        {currentDay?.tasks.map((item: Task) => (
           <TaskComponent key={item.id} task={item} />
         ))}
       </ScrollView>
