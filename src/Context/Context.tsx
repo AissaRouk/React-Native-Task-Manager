@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { Day, Month } from "../Types/Types";
+import { Day, Month, Task } from "../Types/Types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { format, getDaysInMonth } from "date-fns";
 
@@ -9,6 +9,7 @@ export interface AppContextType {
   currentDay: Day | undefined;
   currentMonth: Month | undefined;
   setCurrentDay: (day: Day) => void;
+  addTask: (task: Task) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -17,6 +18,7 @@ export const AppContext = createContext<AppContextType>({
   currentDay: undefined,
   currentMonth: undefined,
   setCurrentDay: () => {},
+  addTask: () => {},
 });
 
 export default function ContextProvider({
@@ -104,7 +106,16 @@ export default function ContextProvider({
   };
 
   //task functions
-  const addTask = () => {};
+  const addTask = (task: Task) => {
+    if (!currentDay) {
+      console.error("Context.addTasks() -> currentDay is undefined!!");
+      return;
+    }
+    var newTasks = currentDay?.tasks;
+    newTasks?.push(task);
+    const updatedDay: Day = { ...currentDay, tasks: newTasks };
+    setCurrentDay(updatedDay);
+  };
 
   const contextValue: AppContextType = {
     months,
@@ -112,6 +123,7 @@ export default function ContextProvider({
     currentDay,
     currentMonth,
     setCurrentDay,
+    addTask,
   };
 
   return (
