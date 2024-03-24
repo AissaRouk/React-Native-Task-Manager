@@ -8,9 +8,9 @@ export interface Task {
 
 export interface Day {
   id: string;
-  dayOfTheWeek: dayNames;
+  dayOfTheWeek?: dayNames;
   day: number;
-  tasks: Task[] | [];
+  tasks?: Task[];
 }
 
 export interface Month {
