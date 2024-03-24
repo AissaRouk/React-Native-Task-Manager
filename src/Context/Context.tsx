@@ -32,7 +32,7 @@ export default function ContextProvider({
   useEffect(() => {
     getMonths();
     getCurrentMonth();
-    // getCurrentDay();
+    getCurrentDay();
   }, []);
 
   // useEffect(() => {
@@ -80,7 +80,31 @@ export default function ContextProvider({
   // };
 
   //days functions
-  const getCurrentDay = () => {};
+  const getCurrentDay = () => {
+    const currentDate = new Date();
+    if (
+      currentMonth &&
+      currentMonth?.days.length > 0 &&
+      currentMonth?.days.some((day) => day.day == currentDate.getDate())
+    ) {
+      const index = currentMonth.days.findIndex(
+        (day) => day.day == currentDate.getDate()
+      );
+      if (index == -1) {
+        console.error("Context -> error in getCurrentDay()");
+        return;
+      }
+      setCurrentDay(currentMonth.days[index]);
+    }
+    setCurrentDay({
+      day: currentDate.getDate(),
+      id: currentDate.getDate() + ":" + currentDate.getDay(),
+      tasks: [],
+    });
+  };
+
+  //task functions
+  const addTask = () => {};
 
   const contextValue: AppContextType = {
     months,
