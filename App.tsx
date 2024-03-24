@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { StyleSheet, Text, View, ScrollView, SafeAreaView } from "react-native";
 import { useFonts } from "expo-font";
 import days from "./src/Data/mockupData";
 import DayComponent from "./src/Components/DayComponent";
-import { Day } from "./src/Types/Types";
-import Icon from "react-native-vector-icons/Ionicons";
+import { Day } from "./src/Types/Types"; // Assuming Task is defined in this file
+import TasksViewComponent from "./src/Components/TasksViewComponent";
+import ContextProvider, { AppContext } from "./src/Context/Context";
+import HeaderComponent from "./src/Components/HeaderComponent";
+import CalendarScrollViewComponent from "./src/Components/CalendarScrollView";
 
 export default function App() {
+  const [currentDay, setCurrentDay] = useState<Day>(days[0]);
   const [fontsLoaded] = useFonts({
     "Gilroy-Black": require("./assets/Fonts/Gilroy-Black.ttf"),
     "Gilroy-Regular": require("./assets/Fonts/Gilroy-Regular.ttf"),
@@ -20,47 +24,16 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Tasks</Text>
-        <View style={styles.headerIcons}>
-          <Icon name="search" size={25} style={styles.icon} />
-          <Icon name="notifications" size={25} style={styles.icon} />
-        </View>
-      </View>
-      {/* Tasks */}
-      <ScrollView
-        horizontal={true}
-        style={styles.scrollView}
-        showsHorizontalScrollIndicator={false}
-      >
-        {days.map((item: Day) => (
-          <DayComponent
-            key={item.id}
-            day={item}
-            highlighted={item.id === "2"}
-          />
-        ))}
-      </ScrollView>
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: "white",
-          marginTop: 20,
-          paddingTop: 20,
-          paddingLeft: 20,
-          paddingHorizontal: 10,
-          borderTopRightRadius: 30,
-          borderTopLeftRadius: 30,
-        }}
-      >
-        <Text style={{ fontFamily: "Gilroy-SemiBold", fontSize: 22 }}>
-          X Tasks today
-        </Text>
-        <ScrollView></ScrollView>
-      </View>
-    </SafeAreaView>
+    <ContextProvider>
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <HeaderComponent />
+        {/* Tasks */}
+        <CalendarScrollViewComponent />
+        {/* Tasks View */}
+        <TasksViewComponent currentDay={currentDay} />
+      </SafeAreaView>
+    </ContextProvider>
   );
 }
 
@@ -68,30 +41,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "black",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 20,
-  },
-  headerTitle: {
-    fontFamily: "Gilroy-SemiBold",
-    fontSize: 22,
-    color: "white",
-  },
-  headerIcons: {
-    flexDirection: "row",
-  },
-  icon: {
-    marginHorizontal: 10,
-    color: "white",
-  },
-  scrollView: {
-    maxHeight: "auto", // Adjust the max height as needed
-    marginTop: 10,
-    marginLeft: 10,
   },
 });
