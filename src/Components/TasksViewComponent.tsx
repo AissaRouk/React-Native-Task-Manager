@@ -1,8 +1,10 @@
-import { ScrollView, View, Text } from "react-native";
+import { ScrollView, View, Text, TouchableOpacity } from "react-native";
 import { Day, Task } from "../Types/Types";
 import TaskComponent from "./TaskComponent";
 import { useContext } from "react";
 import { AppContext } from "../Context/Context";
+import { blackColor, whiteColor } from "../Utils/styles";
+import Icon from "react-native-vector-icons/Ionicons";
 
 export default function TasksViewComponent() {
   const { currentDay } = useContext(AppContext);
@@ -31,6 +33,21 @@ export default function TasksViewComponent() {
           <TaskComponent key={item.id} task={item} />
         ))}
       </ScrollView>
+      <TouchableOpacity
+        style={{
+          backgroundColor: blackColor,
+          height: 60,
+          width: 60,
+          borderRadius: 30,
+          justifyContent: "center",
+          alignItems: "center",
+          position: "absolute",
+          right: "5%",
+          bottom: "3%",
+        }}
+      >
+        <Icon name="add-sharp" size={30} color={whiteColor} />
+      </TouchableOpacity>
     </View>
   );
 }
