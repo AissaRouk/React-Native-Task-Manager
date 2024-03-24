@@ -6,16 +6,22 @@ import {
 } from "../Utils/styles";
 import { Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Day } from "../Types/Types";
+import { useContext, useEffect, useState } from "react";
+import { AppContext } from "../Context/Context";
 
 export default function DayComponent({
   day,
-  highlighted,
-  setCurrentDay,
 }: {
   day: Day;
   highlighted?: boolean;
-  setCurrentDay: (day: Day) => void;
 }) {
+  const { currentDay, setCurrentDay } = useContext(AppContext);
+  const [highlighted, setHighlighted] = useState<boolean>();
+
+  useEffect(() => {
+    setHighlighted(currentDay?.day == day.day);
+  }, [currentDay]);
+
   return (
     <TouchableOpacity
       style={[
