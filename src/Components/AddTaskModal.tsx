@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import {
   Modal,
   Text,
@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import { whiteColor } from "../Utils/styles";
 import getRandomColor from "../Utils/getRandomColor";
+import { AppContext } from "../Context/Context";
+import { Task } from "../Types/Types";
 
 export default function AddTaskModal({
   visible,
@@ -17,6 +19,22 @@ export default function AddTaskModal({
   visible: boolean;
   setModalShown: (visibility: boolean) => void;
 }) {
+  const { addTask } = useContext(AppContext);
+  const [taskName, setTaskName] = useState<string>("");
+  const [taskContent, setTaskContent] = useState<string>("");
+
+  const handleOnPress = () => {
+    const currentDate: Date = new Date();
+    const newTask: Task = {
+      id: currentDate.getHours() + ":" + currentDate.getMinutes(),
+      name: taskName,
+      content: taskContent,
+      hourOfStarting: currentDate,
+      hourOfEnding: currentDate,
+    };
+    addTask(newTask);
+  };
+
   return (
     <Modal
       visible={visible}
@@ -25,14 +43,23 @@ export default function AddTaskModal({
       transparent={true}
     >
       <View style={styles.modalContent}>
-        <TextInput placeholder="Task Name" style={styles.input} />
+        <TextInput
+          placeholder="Task Name"
+          style={styles.input}
+          value={taskName}
+          onChangeText={setTaskName}
+        />
         <TextInput
           placeholder="Description"
           multiline={true}
           style={styles.input}
+          onChangeText={setTaskContent}
         />
         <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => handleOnPress()}
+          >
             <Text>Add</Text>
           </TouchableOpacity>
           <TouchableOpacity
