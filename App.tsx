@@ -1,16 +1,12 @@
-import React, { useContext, useState } from "react";
-import { StyleSheet, Text, View, ScrollView, SafeAreaView } from "react-native";
+import React from "react";
+import { StyleSheet, SafeAreaView, StatusBar } from "react-native";
 import { useFonts } from "expo-font";
-import days from "./src/Data/mockupData";
-import DayComponent from "./src/Components/DayComponent";
-import { Day } from "./src/Types/Types"; // Assuming Task is defined in this file
 import TasksViewComponent from "./src/Components/TasksViewComponent";
-import ContextProvider, { AppContext } from "./src/Context/Context";
+import ContextProvider from "./src/Context/Context";
 import HeaderComponent from "./src/Components/HeaderComponent";
 import CalendarScrollViewComponent from "./src/Components/CalendarScrollView";
 
 export default function App() {
-  const [currentDay, setCurrentDay] = useState<Day>(days[0]);
   const [fontsLoaded] = useFonts({
     "Gilroy-Black": require("./assets/Fonts/Gilroy-Black.ttf"),
     "Gilroy-Regular": require("./assets/Fonts/Gilroy-Regular.ttf"),
@@ -31,7 +27,7 @@ export default function App() {
         {/* Tasks */}
         <CalendarScrollViewComponent />
         {/* Tasks View */}
-        <TasksViewComponent currentDay={currentDay} />
+        <TasksViewComponent />
       </SafeAreaView>
     </ContextProvider>
   );
@@ -41,5 +37,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "black",
+    marginTop: StatusBar.currentHeight,
   },
 });
