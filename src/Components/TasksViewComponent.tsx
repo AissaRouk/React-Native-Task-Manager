@@ -12,28 +12,6 @@ export default function TasksViewComponent() {
   const {currentDay} = useContext(AppContext);
   const [modalShown, setModalShown] = useState<boolean>(false);
 
-  const scheduleLocalNotification = () => {
-    var d1 = new Date(),
-      d2 = new Date(d1);
-
-    d1.setMinutes(d2.getMinutes() + 1);
-    console.log('D1: ' + d1);
-
-    PushNotification.localNotificationSchedule({
-      title: 'notification',
-      message: 'This is a scheduled notification',
-      date: d1, // Fire in 5 seconds (adjust time)
-      channelId: 'notification', // Notification channel ID (explained below)
-    });
-  };
-
-  const pushLocalNotification = () => {
-    PushNotification.localNotification({
-      channelId: 'notification',
-      message: 'Helloooo',
-    });
-  };
-
   return (
     <View
       style={{
@@ -72,9 +50,7 @@ export default function TasksViewComponent() {
           right: '5%',
           bottom: '3%',
         }}
-        onPress={() => {
-          scheduleLocalNotification();
-        }}>
+        onPress={() => setModalShown(!modalShown)}>
         <Icon name="add-sharp" size={30} color={whiteColor} />
       </TouchableOpacity>
     </View>
