@@ -3,6 +3,8 @@ import {Day, Month, Task, monthNamesEnum} from '../Types/Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {format, getDaysInMonth} from 'date-fns';
 import getDayOfWeek from '../Utils/getDayOfWeek';
+import PushNotification from 'react-native-push-notification';
+import getMonthName from '../Utils/getMonthName';
 
 export interface AppContextType {
   months: Month[];
@@ -35,7 +37,7 @@ export default function ContextProvider({
   const [months, setMonths] = useState<Month[]>([]);
   const [currentMonth, setCurrentMonth] = useState<Month>();
   const [currentDay, setCurrentDay] = useState<Day>();
-  const [flag, setFlag] = useState<boolean>();
+  const currentDate = new Date();
 
   const deleteMonths = async () => {
     await AsyncStorage.removeItem(monthNameAsyncStorage).then(response =>
@@ -49,71 +51,35 @@ export default function ContextProvider({
     initializeMonths();
   }, []);
 
-  //every time the months is updated
   useEffect(() => {
     console.log(
-      'useEffect.months -> : ' +
-        JSON.stringify(months, null, 1) +
-        'flag: ' +
-        flag,
+      'useEffect.months -> entering with value of months ' +
+        JSON.stringify(months) +
+        ' ',
     );
-    //if the update flag is true, update the currentMonth
-    if (flag) {
-      console.log('useEffect.months -> : entered');
-      initializeCurrentMonth();
-      console.log('');
-    } else if (flag === false) {
-      saveMonths();
-    }
-  }, [months, flag]);
+    initializeCurrentMonth();
+  }, [months]);
 
-  //every time the currentMonth is updated
   useEffect(() => {
     console.log(
-      'UseEffect.currentMonth -> ' + JSON.stringify(currentMonth, null, 1),
+      'useEffect.currentMonth -> entering with value of currentMonth ' +
+        JSON.stringify(currentMonth) +
+        ' ',
     );
-    //if the flag is true update the currentDay
-    if (currentMonth && flag) {
-      console.log('UseEffect.currentMonth -> ' + 'entered');
-      initializeCurrentDay();
-      setFlag(false);
-    }
+    initializeCurrentDay();
   }, [currentMonth]);
 
   useEffect(() => {
     console.log(
-      'useEffect.currentMonth.days -> ' + JSON.stringify(currentMonth, null, 1),
+      'useEffect.currentDay -> entering with value of currentDay ' +
+        JSON.stringify(currentDay),
     );
-    if (currentMonth?.days && currentMonth?.days.length > 0 && !flag) {
-      console.log('useEffect.currentMonth.days -> entered');
-      updateMonths();
-    }
-  }, [currentMonth?.days]);
+  }, [currentDay]);
 
-  //every time the currentDay.task is updated, update the currentMonth, because that means that we a new task
-  useEffect(() => {
-    console.log('useEffect.currentDay.task: ' + flag);
-    if (!flag && currentDay?.tasks && currentDay?.tasks?.length > 0) {
-      updateCurrentMonth();
-      console.log('updating');
-    }
-  }, [currentDay?.tasks]);
-
-  //every time the day is changed
-  useEffect(() => {
-    //if flag is false
-    if (currentDay && !flag) {
-      console.log(
-        'useEffect.currentDay.day -> updating currentday: ' +
-          JSON.stringify(currentDay, null, 1),
-      );
-      //get the tasks
-      getCurrentDay();
-    }
-  }, [currentDay?.day]);
-
+  /**
+   * function that gets the months from the AsyncStorage
+   */
   const initializeMonths = async () => {
-    console.log('InitializeMonths -> entered');
     await AsyncStorage.getItem(monthNameAsyncStorage).then(response => {
       if (response) {
         setMonths(JSON.parse(response));
@@ -121,18 +87,19 @@ export default function ContextProvider({
           'initializeMonths -> response: ' + JSON.stringify(response, null, 1),
         );
       }
-      setFlag(true);
       return;
     });
   };
 
+  /**
+   * Function that gets the current month from "months" according to the current date,
+   * if this months doesn't exist in the months var it creates a new one
+   */
   const initializeCurrentMonth = async () => {
-    const currentDate = new Date();
-    const currentMonthName: monthNamesEnum = format(
-      currentDate,
-      'MMMM',
-    ) as unknown as monthNamesEnum;
+    const currentMonthName: monthNamesEnum = getMonthName(currentDate);
     const currentYear = format(currentDate, 'yyyy');
+
+    //fetch the current month from months
     const foundCurrentMonth = months.find(
       month => month.name === currentMonthName,
     );
@@ -140,7 +107,7 @@ export default function ContextProvider({
       'initializeCurrentMonth -> foundCurrentMonth: ' +
         JSON.stringify(foundCurrentMonth, null, 1),
     );
-    //if not, create an empty one
+    //if current month is not in months, create an empty one
     if (!foundCurrentMonth) {
       const newCurrentMonth: Month = {
         name: currentMonthName,
@@ -155,8 +122,11 @@ export default function ContextProvider({
     else setCurrentMonth(foundCurrentMonth);
   };
 
+  /**
+   * function that gets the current day according to the date from currentMonth
+   * if currentMonth doesn't contain it, create a new one
+   */
   const initializeCurrentDay = () => {
-    const currentDate = new Date();
     //check if there's the current day in currentMonth.days
     const foundCurrentDay = currentMonth?.days.find(
       day => day.day === currentDate.getDate(),
@@ -165,7 +135,7 @@ export default function ContextProvider({
       'initializecurrentDay -> foundCurrentDay: ' +
         JSON.stringify(foundCurrentDay, null, 1),
     );
-    //if not create the current day
+    //if not create a new currentDay
     if (!foundCurrentDay && currentMonth) {
       const newCurrentDay: Day = {
         day: currentDate.getDate(),
@@ -184,7 +154,6 @@ export default function ContextProvider({
     else {
       setCurrentDay(foundCurrentDay);
     }
-    setFlag(false);
   };
 
   /**
@@ -192,7 +161,7 @@ export default function ContextProvider({
    */
   const getCurrentDay = () => {
     if (!currentDay) {
-      console.error('getCurrentDay -> currentDay is empty');
+      // console.error('getCurrentDay -> currentDay is empty');
       return;
     } else if (currentDay.tasks && currentDay.tasks.length > 0) {
       return;
@@ -202,7 +171,7 @@ export default function ContextProvider({
     );
     if (foundCurrentDay) {
       setCurrentDay(foundCurrentDay);
-      console.log('Date: ' + JSON.stringify(foundCurrentDay.tasks));
+      // console.log('Date: ' + JSON.stringify(foundCurrentDay.tasks));
     }
   };
 
@@ -213,25 +182,6 @@ export default function ContextProvider({
       return;
     }
 
-    // find the day corresponding to the specified date
-    var targetDay = currentMonth?.days.find(day => day.day === date.getDate());
-
-    // if the day does not exist, create it
-    if (!targetDay && currentMonth) {
-      const newDay: Day = {
-        day: date.getDate(),
-        id: `${date.getDate()}:${date.getMonth() + 1}`,
-        tasks: [],
-        dayOfTheWeek: getDayOfWeek(
-          currentMonth.year,
-          currentMonth.name,
-          date.getDate(),
-        ),
-      };
-      setCurrentDay(newDay);
-      targetDay = newDay;
-    }
-
     //creating new task
     const newTask: Task = {
       name: taskName,
@@ -240,15 +190,82 @@ export default function ContextProvider({
       date: date,
     };
 
-    //adding task to the currentDay
-    const updatedDay: Day = {
-      ...targetDay,
-      tasks: [...(targetDay?.tasks || []), newTask],
-    };
-    setCurrentDay(updatedDay);
-    console.log(
-      'addTask.currentDay updated: ' + JSON.stringify(updatedDay, null, 1),
+    //checking if the month of the tasks' date exists in "months"
+    var targetMonth = months.find(
+      month => month.id === getMonthName(date) + ':' + date.getFullYear(),
     );
+
+    //if it doesn't exist, create one in "months"
+    if (!targetMonth) {
+      //creating the newDay
+      const newDay: Day = {
+        id: `${date.getDate()}:${date.getMonth() + 1}`,
+        dayOfTheWeek: getDayOfWeek(
+          date.getFullYear(),
+          getMonthName(date),
+          date.getDate(),
+        ),
+        day: date.getDate(),
+        tasks: [newTask],
+      };
+
+      //creating the new non-existing month
+      targetMonth = {
+        id: getMonthName(date) + ':' + date.getFullYear(),
+        name: getMonthName(date),
+        year: date.getFullYear(),
+        days: [newDay],
+        totalDays: getDaysInMonth(date),
+      };
+      const newMonths: Month[] = [...months, targetMonth];
+      setMonths(newMonths);
+    } else {
+      // find the day corresponding to the specified date
+      var targetDay = targetMonth?.days.find(day => day.day === date.getDate());
+
+      // if the day does not exist, create it
+      if (!targetDay) {
+        //creating new day
+        const newDay: Day = {
+          day: date.getDate(),
+          id: `${date.getDate()}:${date.getMonth() + 1}`,
+          tasks: [newTask],
+          dayOfTheWeek: getDayOfWeek(
+            targetMonth.year,
+            targetMonth.name,
+            date.getDate(),
+          ),
+        };
+        //saving it in the targetMonth
+        targetMonth.days = [...targetMonth.days, newDay];
+        // modifying it in the months
+        const modifiedMonths = months.map(month =>
+          month.id === targetMonth?.id ? targetMonth : month,
+        );
+        // saving the months
+        setMonths(modifiedMonths);
+      } else {
+        const newDay: Day = {
+          day: targetDay.day,
+          id: targetDay.id,
+          tasks: targetDay?.tasks ? [...targetDay.tasks, newTask] : [newTask],
+          dayOfTheWeek: targetDay.dayOfTheWeek,
+        };
+        targetMonth.days = [...targetMonth.days, newDay];
+        const modifiedMonths = months.map(month =>
+          month.id === targetMonth?.id ? targetMonth : month,
+        );
+        setMonths(modifiedMonths);
+      }
+    }
+    saveMonths();
+
+    PushNotification.localNotificationSchedule({
+      message: 'You have ' + taskName + ' now',
+      title: "Task '" + taskName + "'",
+      channelId: 'notification',
+      date: date,
+    });
   };
 
   const updateCurrentMonth = () => {
