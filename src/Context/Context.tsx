@@ -5,6 +5,7 @@ import {format, getDaysInMonth} from 'date-fns';
 import getDayOfWeek from '../Utils/getDayOfWeek';
 import PushNotification from 'react-native-push-notification';
 import getMonthName from '../Utils/getMonthName';
+import {Dropdown} from 'react-native-element-dropdown';
 
 export interface AppContextType {
   months: Month[];
@@ -157,24 +158,33 @@ export default function ContextProvider({
   };
 
   /**
-   * Function that gets the tasks of the currentDay, this function is called when the day is changed by the user, and it fetches the tasks of that day
+   * Function that fethces the month of the current year
    */
-  const getCurrentDay = () => {
-    if (!currentDay) {
-      // console.error('getCurrentDay -> currentDay is empty');
-      return;
-    } else if (currentDay.tasks && currentDay.tasks.length > 0) {
+  const getMonth = (name: monthNamesEnum, monthIndex: number) => {
+    const monthDate = new Date(currentDate.getFullYear(), monthIndex);
+    var targetMonth: Month | undefined = months.find(m => {
+      m.name === name;
+    });
+    if (targetMonth) {
+      setCurrentMonth(targetMonth);
       return;
     }
-    const foundCurrentDay = currentMonth?.days.find(
-      day => day.id == currentDay.id,
-    );
-    if (foundCurrentDay) {
-      setCurrentDay(foundCurrentDay);
-      // console.log('Date: ' + JSON.stringify(foundCurrentDay.tasks));
-    }
+    targetMonth = {
+      id: name + ':' + currentDate.getFullYear(),
+      name: name,
+      year: currentDate.getFullYear(),
+      days: [],
+      totalDays: getDaysInMonth(monthDate),
+    };
+    setCurrentMonth(targetMonth);
   };
 
+  /**
+   * function that adds a task of a specific date in the months date
+   * @param {string} taskName "the task name"
+   * @param {string} taskContent the task content
+   * @param {Date} date the date of the task
+   */
   const addTask = (taskName: string, taskContent: string, date: Date) => {
     //checking if params are correct
     if (!taskName || !taskContent || !date) {
@@ -217,6 +227,7 @@ export default function ContextProvider({
         days: [newDay],
         totalDays: getDaysInMonth(date),
       };
+      if (currentMonth?.id == targetMonth.id) setCurrentMonth(targetMonth);
       const newMonths: Month[] = [...months, targetMonth];
       setMonths(newMonths);
     } else {
@@ -266,71 +277,6 @@ export default function ContextProvider({
       channelId: 'notification',
       date: date,
     });
-  };
-
-  const updateCurrentMonth = () => {
-    // checking currentMonth
-    if (!currentMonth || !currentDay) {
-      console.error('Context.addTask: currentMonth is undefined');
-      return;
-    } else if (
-      currentMonth.days.find(day => day.day == currentDay.day)?.tasks ===
-      currentDay.tasks
-    )
-      return;
-
-    //if the current day already exists in currentMonth
-    if (currentMonth.days.some(day => day.id == currentDay.id)) {
-      console.log(
-        'updateCurrentMonth -> found currentDay in currentMonth ' +
-          JSON.stringify(currentMonth),
-      );
-
-      //update it in the days array
-      const updatedDays: Day[] = currentMonth.days.map(day =>
-        day.id == currentDay.id ? currentDay : day,
-      );
-      console.log(
-        'updateCurrentMonth -> updatedDays array: ' +
-          JSON.stringify(updatedDays, null, 1),
-      );
-      //create the updated currentMonth
-      const updatedCurrentMonth: Month = {...currentMonth, days: updatedDays};
-      setCurrentMonth(updatedCurrentMonth);
-      console.log(
-        'currentMonth updated: ' + JSON.stringify(updatedCurrentMonth, null, 1),
-      );
-    }
-    // if not
-    else {
-      //add directly the currentDay
-      const updatedDays: Day[] = [...currentMonth.days, currentDay];
-      const updatedCurrentMonth: Month = {...currentMonth, days: updatedDays};
-      setCurrentMonth(updatedCurrentMonth);
-      console.log(
-        'currentMonth updated: ' + JSON.stringify(updatedCurrentMonth, null, 1),
-      );
-    }
-  };
-
-  const updateMonths = () => {
-    if (!currentMonth) {
-      console.error('Context.updateMonths: currentMonth is undefined');
-      return;
-    } else if (months.includes(currentMonth)) return;
-    if (months.some(month => month.id === currentMonth.id)) {
-      //update it in the months array
-      const updatedMonths: Month[] = months.map(month =>
-        month.id == currentMonth.id ? currentMonth : month,
-      );
-      setMonths(updatedMonths);
-      console.log('months updated: ' + JSON.stringify(updatedMonths, null, 1));
-    } //add directly the currentDay
-    else {
-      const updatedMonths: Month[] = [...months, currentMonth];
-      setMonths(updatedMonths);
-      console.log('months updated: ' + JSON.stringify(updatedMonths, null, 1));
-    }
   };
 
   const saveMonths = async () => {
