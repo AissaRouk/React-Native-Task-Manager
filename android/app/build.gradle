@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply plugin: 'com.android.application'
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -114,10 +115,16 @@ dependencies {
         implementation jscFlavor
     }
         implementation project(':react-native-push-notification')
+        implementation fileTree(dir: "libs", include: ["*.jar"])
+        implementation "com.facebook.react:react-native:+"  // From node_modules
+        implementation project(':react-native-vector-icons')
+
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); 
 applyNativeModulesAppBuildGradle(project);
+
+//code added for rn-vector-icons
 project.ext.vectoricons = [
     iconFontNames: [ "IonIcons" ]
 ]
