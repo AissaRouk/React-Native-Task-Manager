@@ -38,7 +38,7 @@ export default function CalendarScrollViewComponent() {
       {/* I'm creating an array in here to make a Daycomponent for each day that exists in the month */}
       {[...Array(currentMonth.totalDays)].map((_, index) => {
         // Calculate the day number
-        const dayNumber = index + 1;
+        const dayNumber = index;
         // If the day exists in the month, fetch it, if not create an empty new day
         const day = currentMonth.days?.find(d => d.day === dayNumber) || {
           day: dayNumber,
