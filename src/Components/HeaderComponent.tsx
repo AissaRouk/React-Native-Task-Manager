@@ -3,32 +3,33 @@ import {StyleSheet, View, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/dist/Ionicons';
 import {AppContext} from '../Context/Context';
 import {Dropdown} from 'react-native-element-dropdown';
-import {monthNamesEnum} from '../Types/Types';
 import getMonthName from '../Utils/getMonthName';
 
 export default function HeaderComponent() {
-  const {currentMonth} = useContext(AppContext);
+  const {getMonth} = useContext(AppContext);
   const [chosenMonth, setChosenMonth] = useState<{
     label: String;
     value: string;
+    index: number;
   }>({
     label: '' + getMonthName(new Date()),
     value: '' + getMonthName(new Date()),
+    index: new Date().getMonth(),
   });
 
   const monthObjects = [
-    {label: 'January', value: 'January'},
-    {label: 'February', value: 'February'},
-    {label: 'March', value: 'March'},
-    {label: 'April', value: 'April'},
-    {label: 'May', value: 'May'},
-    {label: 'June', value: 'June'},
-    {label: 'July', value: 'July'},
-    {label: 'August', value: 'August'},
-    {label: 'September', value: 'September'},
-    {label: 'October', value: 'October'},
-    {label: 'November', value: 'November'},
-    {label: 'December', value: 'December'},
+    {label: 'January', value: 'January', index: 1},
+    {label: 'February', value: 'February', index: 2},
+    {label: 'March', value: 'March', index: 3},
+    {label: 'April', value: 'April', index: 4},
+    {label: 'May', value: 'May', index: 5},
+    {label: 'June', value: 'June', index: 6},
+    {label: 'July', value: 'July', index: 7},
+    {label: 'August', value: 'August', index: 8},
+    {label: 'September', value: 'September', index: 9},
+    {label: 'October', value: 'October', index: 10},
+    {label: 'November', value: 'November', index: 11},
+    {label: 'December', value: 'December', index: 12},
   ];
 
   return (
@@ -40,7 +41,10 @@ export default function HeaderComponent() {
           labelField={'label'}
           valueField={'value'}
           onChange={item => {
-            setChosenMonth(item);
+            if (item != chosenMonth) {
+              setChosenMonth(item);
+              getMonth(item.value, item.index);
+            }
           }}
           style={{marginLeft: 5, flex: 1, minWidth: 150}}
           selectedTextStyle={styles.headerTitle}
