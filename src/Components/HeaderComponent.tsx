@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/dist/Ionicons';
 import {AppContext} from '../Context/Context';
 import {Dropdown} from 'react-native-element-dropdown';
 import getMonthName from '../Utils/getMonthName';
+import {monthNamesEnum} from '../Types/Types';
 
 export default function HeaderComponent() {
   const {getMonth} = useContext(AppContext);
@@ -43,7 +44,7 @@ export default function HeaderComponent() {
           onChange={item => {
             if (item != chosenMonth) {
               setChosenMonth(item);
-              getMonth(item.value, item.index);
+              getMonth(item.value as unknown as monthNamesEnum, item.index);
             }
           }}
           style={{marginLeft: 5, flex: 1, minWidth: 150}}
