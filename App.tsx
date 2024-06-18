@@ -1,10 +1,5 @@
 import React, {useEffect} from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  StatusBar,
-  PermissionsAndroid,
-} from 'react-native';
+import {StyleSheet, SafeAreaView, PermissionsAndroid} from 'react-native';
 import TasksViewComponent from './src/Components/TasksViewComponent';
 import ContextProvider from './src/Context/Context';
 import HeaderComponent from './src/Components/HeaderComponent';
