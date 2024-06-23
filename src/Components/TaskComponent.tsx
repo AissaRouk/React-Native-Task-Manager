@@ -1,14 +1,22 @@
-import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  Modal,
+  Alert,
+} from 'react-native';
 import getRandomColor from '../Utils/getRandomColor';
 import {Task} from '../Types/Types';
+import ModalOptionsComponent from './ModalOptionsComponents';
 
 export default function TaskComponent({task}: {task: Task}) {
+  const [modalVisibility, setModalVisibility] = useState<boolean>(false);
   const backgroundColor = getRandomColor();
 
   // Function to format time as hh:mm
   const formatTime = (date: Date) => {
-    console.log('Date: ' + date + ' type: ' + typeof date);
     if (!date || !(date instanceof Date)) {
       return new Date(date).toLocaleTimeString();
     }
@@ -19,16 +27,22 @@ export default function TaskComponent({task}: {task: Task}) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.taskView, {backgroundColor}]}>
-        <Text style={styles.title}>{task.name}</Text>
-        <Text style={styles.content}>{task.content}</Text>
+    <TouchableWithoutFeedback onLongPress={() => setModalVisibility(true)}>
+      <View style={styles.container}>
+        <ModalOptionsComponent
+          modalVisibility={modalVisibility}
+          setModalVisibility={setModalVisibility}
+        />
+        <View style={[styles.taskView, {backgroundColor}]}>
+          <Text style={styles.title}>{task.name}</Text>
+          <Text style={styles.content}>{task.content}</Text>
+        </View>
+        <View style={styles.timeView}>
+          <View style={[styles.dot, {backgroundColor}]} />
+          <Text style={styles.timeText}>{formatTime(task.date)}</Text>
+        </View>
       </View>
-      <View style={styles.timeView}>
-        <View style={[styles.dot, {backgroundColor}]} />
-        <Text style={styles.timeText}>{formatTime(task.date)}</Text>
-      </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
