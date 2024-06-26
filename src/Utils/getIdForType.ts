@@ -1,16 +1,31 @@
+import {Task} from '../Types/Types';
 import getMonthName from './getMonthName';
 
 type MyTypes = 'Task' | 'Month' | 'Day'; // Define a union type for allowed types
 
-export default function getIdForType(type: MyTypes, date: Date): string {
+export default function getIdForType(
+  type: MyTypes,
+  date: Date,
+  taskName?: string,
+): string {
+  if (date == undefined)
+    throw new Error('getIdForType -> The date passed is undefined');
+  else if (!(date instanceof Date)) {
+    console.log(
+      'getIdForType -> the date provided is NOT an instanceof Date : ' +
+        typeof date,
+    );
+  }
+
   switch (type) {
     case 'Task':
       // Return ID based on task date time (hours, minutes, seconds)
-      return `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`;
+      return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}:${taskName}`;
     case 'Month':
-      return `${date.toLocaleDateString('en-US', {
-        month: 'long',
-      })}:${date.getFullYear()}`;
+      console.log('getIdForType.Month -> date: ' + JSON.stringify(date)) +
+        'fullYear: ' +
+        date.getFullYear();
+      return `${getMonthName(date)}:${date.getFullYear()}`;
     case 'Day':
       // Return ID based on day and month (1-based indexing for month)
       return `${date.getDate()}:${date.getMonth() + 1}`;
