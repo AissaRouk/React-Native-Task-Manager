@@ -1,18 +1,28 @@
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Task} from '../Types/Types';
+import {useContext} from 'react';
+import {AppContext} from '../Context/Context';
 
 export default function ModalOptionsComponent({
   modalVisibility,
   setModalVisibility,
+  task,
 }: {
   modalVisibility: boolean;
   setModalVisibility: (modalVisibility: boolean) => void;
+  task: Task;
 }) {
+  const {deleteTask} = useContext(AppContext);
   return (
     <Modal visible={modalVisibility} transparent={true}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.title}>Options</Text>
           <TouchableOpacity
+            onPress={() => {
+              deleteTask(task);
+              setModalVisibility(false);
+            }}
             style={[styles.buttonContainer, {marginBottom: 10}]}>
             <Text>Delete Task</Text>
           </TouchableOpacity>
