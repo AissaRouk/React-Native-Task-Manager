@@ -69,14 +69,15 @@ export default function ContextProvider({
   }, []);
 
   useEffect(() => {
-    if (saveMonthsFlag) {
-      saveMonths();
-    }
     console.log(
       'useEffect.months -> entering with value of months ' +
         JSON.stringify(months) +
         ' ',
     );
+    if (saveMonthsFlag) {
+      saveMonths();
+    }
+
     initializeCurrentMonth();
   }, [months, saveMonthsFlag]);
 
@@ -410,25 +411,34 @@ export default function ContextProvider({
             console.log('deleteTask.comprobation -> ' + 'entered taskIndex if');
 
             //checking if there are some tasks in that day, because it might be that the deleted task was the only one that existed
-            if (targetDay.tasks && targetDay.tasks?.length > 0)
+            if (targetDay.tasks && targetDay.tasks?.length > 0) {
+              console.log(
+                'deleteTask.comprobation -> ' + 'entered targetDay.tasks if',
+              );
               //update the day from the targetMonth
               targetMonth.days[dayIndex].tasks = targetDay.tasks;
-            //if there are no tasks, delete the day from the targetMonth
-            else {
-              targetMonth.days.splice(dayIndex, 1);
-
-              //check if the targetMonth is empty after deletion
-              if (targetMonth.days.length <= 0) months.splice(monthIndex, 1);
-              //if not, update the targetMonth value in months
-              else {
-                months[monthIndex] = targetMonth;
-              }
-
-              //activate the flag so it can update the value of months
-              setSaveMonthsFlag(true);
-              saveMonths();
-              return;
             }
+            //if there are no tasks, delete the day from the targetMonth
+            else targetMonth.days.splice(dayIndex, 1);
+
+            var updatedMonths: Month[];
+
+            //check if the targetMonth is empty after deletion
+            if (targetMonth.days.length <= 0) {
+              updatedMonths = months;
+              updatedMonths.splice(monthIndex, 1);
+            }
+
+            //if not, update the targetMonth value in months
+            else {
+              updatedMonths = months;
+              updatedMonths[monthIndex] = targetMonth;
+            }
+
+            //activate the flag so it can update the value of months
+            setSaveMonthsFlag(true);
+            setMonths(updatedMonths);
+            return;
           }
         }
       }
