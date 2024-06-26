@@ -1,7 +1,7 @@
 import React, {createContext, useEffect, useState} from 'react';
 import {Day, Month, Task, monthNamesEnum} from '../Types/Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {format, getDaysInMonth} from 'date-fns';
+import {format, getDaysInMonth, milliseconds} from 'date-fns';
 import getDayOfWeek from '../Utils/getDayOfWeek';
 import PushNotification from 'react-native-push-notification';
 import getMonthName from '../Utils/getMonthName';
@@ -18,6 +18,10 @@ export interface AppContextType {
    * function that adds a task
    */
   addTask: (taskName: string, taskContent: string, date: Date) => void;
+  /***
+   * Function that deletes a specific Task
+   */
+  deleteTask: (task: Task) => void;
   getMonth: (name: monthNamesEnum, monthIndex: number) => void;
 }
 
@@ -29,6 +33,10 @@ export const AppContext = createContext<AppContextType>({
   setCurrentDay: () => {},
   /**Function that adds a task*/
   addTask: () => {},
+  /***
+   * Function that deletes a specific Task
+   */
+  deleteTask: () => {},
   getMonth: () => {},
 });
 
@@ -218,7 +226,7 @@ export default function ContextProvider({
     const newTask: Task = {
       name: taskName,
       content: taskContent,
-      id: getIdForType('Task', date),
+      id: getIdForType('Task', date, taskName),
       date: date,
     };
 
@@ -235,7 +243,7 @@ export default function ContextProvider({
         id: getIdForType('Day', date),
         dayOfTheWeek: getDayOfWeek(
           date.getFullYear(),
-          getMonthName(date),
+          date.getMonth(),
           date.getDate(),
         ),
         day: date.getDate(),
@@ -268,7 +276,7 @@ export default function ContextProvider({
           tasks: [newTask],
           dayOfTheWeek: getDayOfWeek(
             targetMonth.year,
-            targetMonth.name,
+            date.getMonth(),
             date.getDate(),
           ),
         };
@@ -311,6 +319,123 @@ export default function ContextProvider({
     });
   };
 
+  /***
+   * Function that deletes a specific Task
+   */
+  const deleteTask = (task: Task) => {
+    if (!task) throw console.error('Context.deleteTask -> task is undefined');
+
+    //creating variables
+    var targetTask: Task | undefined,
+      targetDay: Day | undefined,
+      targetMonth: Month | undefined;
+
+    //comprobating that it is a date
+    console.log('deleteTask.comprobation -> ' + typeof currentDate);
+
+    //get the id for the month
+    var id: string = getIdForType('Month', new Date(task.date));
+
+    //searching for the Task's month
+    targetMonth = months.find(month => month.id === id);
+    // console.log("deleteTask. -> " + "");
+    console.log('deleteTask.targetMonth -> ' + JSON.stringify(targetMonth));
+
+    //if targetMonth != undefined
+    if (targetMonth) {
+      console.log('deleteTask.comprobation -> ' + 'entered targetMonth if');
+
+      //get the id for the day
+      id = getIdForType('Day', new Date(task.date));
+
+      //find the targetDay
+      targetDay = targetMonth.days.find(day => day.id === id);
+
+      //if it exists
+      if (targetDay) {
+        console.log(
+          'deleteTask.comprobation -> ' +
+            'entered targetDay if with value: ' +
+            JSON.stringify(targetDay),
+        );
+
+        //get id for task
+        id = getIdForType('Task', new Date(task.date), task.name);
+
+        console.log('deleteTask.comprobation -> ' + 'id of Task: ' + id);
+
+        //search for the task
+        targetTask = targetDay.tasks?.find(task => task.id === id);
+
+        console.log(
+          'deleteTask.comprobation -> ' +
+            'targetTask fetched with value: ' +
+            JSON.stringify(targetTask),
+        );
+        //if it exists
+        if (targetTask) {
+          console.log(
+            'deleteTask.comprobation -> ' +
+              'entered targetTask if with value: ' +
+              JSON.stringify(targetTask),
+          );
+          //
+          //the indexes are fetched before the modifications so they can be found, because once after modifiactions they won't be found
+          //
+          //search for it's index to be deleted easily
+          const taskIndex = targetDay.tasks?.indexOf(task);
+
+          //search the day in the targetMonth
+          const dayIndex = targetMonth.days.indexOf(targetDay);
+
+          //targetMonth index
+          const monthIndex = months.indexOf(targetMonth);
+
+          console.log(
+            'deleteTask.comprobation -> ' +
+              'fetching indexes: ' +
+              'month: ' +
+              monthIndex +
+              'day: ' +
+              dayIndex +
+              'task: ' +
+              taskIndex,
+          );
+
+          //if found
+          if (taskIndex != undefined && taskIndex >= 0) {
+            //delete Task from targetDay
+            targetDay.tasks?.splice(taskIndex, 1);
+
+            console.log('deleteTask.comprobation -> ' + 'entered taskIndex if');
+
+            //checking if there are some tasks in that day, because it might be that the deleted task was the only one that existed
+            if (targetDay.tasks && targetDay.tasks?.length > 0)
+              //update the day from the targetMonth
+              targetMonth.days[dayIndex].tasks = targetDay.tasks;
+            //if there are no tasks, delete the day from the targetMonth
+            else {
+              targetMonth.days.splice(dayIndex, 1);
+
+              //check if the targetMonth is empty after deletion
+              if (targetMonth.days.length <= 0) months.splice(monthIndex, 1);
+              //if not, update the targetMonth value in months
+              else {
+                months[monthIndex] = targetMonth;
+              }
+
+              //activate the flag so it can update the value of months
+              setSaveMonthsFlag(true);
+              saveMonths();
+              return;
+            }
+          }
+        }
+      }
+    }
+    console.error('Context.js - deleteTask -> Error in deleteTask ');
+  };
+
   const saveMonths = async () => {
     console.log(
       'saveMonths -> saving this state of months: ' + JSON.stringify(months),
@@ -332,6 +457,7 @@ export default function ContextProvider({
     currentMonth,
     setCurrentDay,
     addTask,
+    deleteTask,
     getMonth,
   };
 
