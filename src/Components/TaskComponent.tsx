@@ -32,6 +32,7 @@ export default function TaskComponent({task}: {task: Task}) {
         <ModalOptionsComponent
           modalVisibility={modalVisibility}
           setModalVisibility={setModalVisibility}
+          task={task}
         />
         <View style={[styles.taskView, {backgroundColor}]}>
           <Text style={styles.title}>{task.name}</Text>
