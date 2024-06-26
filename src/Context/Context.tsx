@@ -1,7 +1,7 @@
 import React, {createContext, useEffect, useState} from 'react';
 import {Day, Month, Task, monthNamesEnum} from '../Types/Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {format, getDaysInMonth, milliseconds} from 'date-fns';
+import {format, getDaysInMonth} from 'date-fns';
 import getDayOfWeek from '../Utils/getDayOfWeek';
 import PushNotification from 'react-native-push-notification';
 import getMonthName from '../Utils/getMonthName';
