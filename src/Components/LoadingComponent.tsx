@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, ActivityIndicator, StyleSheet, Image} from 'react-native';
+import {View, ActivityIndicator, StyleSheet, Image, Text} from 'react-native';
 
 const LoadingScreen = ({
   setIsLoading,
@@ -15,8 +15,16 @@ const LoadingScreen = ({
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color="#00ff00" />
-      <Image alt="Logo" src={require('../../assets/Image/round_logo.png')} />
+      <Image
+        source={require('../../assets/Image/round_logo.png')}
+        style={styles.logo}
+      />
+      <ActivityIndicator
+        size="large"
+        color="black"
+        style={{marginBottom: 20}}
+      />
+      <Text style={styles.text}>Loading</Text>
     </View>
   );
 };
@@ -29,10 +37,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   logo: {
-    width: 100,
-    height: 100,
-    marginTop: 20,
+    width: 200,
+    height: undefined,
+    aspectRatio: 1,
+    marginBottom: 20,
   },
+  text: {fontFamily: 'Gilroy-Black', color: 'black', fontSize: 20},
 });
 
 export default LoadingScreen;
