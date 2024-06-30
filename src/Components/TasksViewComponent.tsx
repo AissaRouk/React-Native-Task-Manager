@@ -1,16 +1,20 @@
 import {ScrollView, View, Text, TouchableOpacity} from 'react-native';
 import {Task} from '../Types/Types';
 import TaskComponent from './TaskComponent';
-import {useContext, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {blackColor, whiteColor} from '../Utils/styles';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AddTaskModal from './AddTaskModal';
 import {AppContext} from '../Context/Context';
-import PushNotification from 'react-native-push-notification';
 
 export default function TasksViewComponent() {
   const {currentDay} = useContext(AppContext);
   const [modalShown, setModalShown] = useState<boolean>(false);
+
+  useEffect(
+    () => console.log('TasksViewComponent -> currentDay has changed'),
+    [currentDay],
+  );
 
   return (
     <View
