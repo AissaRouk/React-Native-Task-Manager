@@ -76,6 +76,7 @@ export default function ContextProvider({
     );
     if (saveMonthsFlag) {
       saveMonths();
+      setSaveMonthsFlag(false);
     }
 
     initializeCurrentMonth();
@@ -88,7 +89,7 @@ export default function ContextProvider({
         ' ',
     );
     initializeCurrentDay();
-  }, [currentMonth]);
+  }, [currentMonth, currentMonth?.days]);
 
   useEffect(() => {
     console.log(
@@ -140,7 +141,9 @@ export default function ContextProvider({
       setCurrentMonth(newCurrentMonth);
     }
     // if there's save it
-    else setCurrentMonth(foundCurrentMonth);
+    else {
+      setCurrentMonth(foundCurrentMonth);
+    }
   };
 
   /**
@@ -151,7 +154,6 @@ export default function ContextProvider({
    */
   const initializeCurrentDay = () => {
     var foundCurrentDay: Day | undefined;
-
     //get the monthId to see if we want to initialize the actual current month according to our date or we want to fetch another month, this is done to know wether to return the actual day of the month or the first one
     var check = currentMonth?.name == getMonthName(currentDate);
 
@@ -238,7 +240,6 @@ export default function ContextProvider({
 
     //if it doesn't exist, create one in "months"
     if (targetMonth == undefined) {
-      console.log('!targetMonth');
       //creating the newDay
       const newDay: Day = {
         id: getIdForType('Day', date),
@@ -263,7 +264,6 @@ export default function ContextProvider({
       const newMonths: Month[] = [...months, targetMonth];
       setMonths(newMonths);
     } else {
-      console.log('targetMonth==true');
       // find the day corresponding to the specified date
       var targetDay = targetMonth?.days.find(day => day.day === date.getDate());
       console.log('addTask -> targetDay: ' + JSON.stringify(targetDay));
@@ -317,6 +317,7 @@ export default function ContextProvider({
       title: "Task '" + taskName + "'",
       channelId: 'notification',
       date: date,
+      id: getIdForType('Notification', date, taskName),
     });
   };
 
@@ -332,20 +333,15 @@ export default function ContextProvider({
       targetMonth: Month | undefined;
 
     //comprobating that it is a date
-    console.log('deleteTask.comprobation -> ' + typeof currentDate);
 
     //get the id for the month
     var id: string = getIdForType('Month', new Date(task.date));
 
     //searching for the Task's month
     targetMonth = months.find(month => month.id === id);
-    // console.log("deleteTask. -> " + "");
-    console.log('deleteTask.targetMonth -> ' + JSON.stringify(targetMonth));
 
     //if targetMonth != undefined
     if (targetMonth) {
-      console.log('deleteTask.comprobation -> ' + 'entered targetMonth if');
-
       //get the id for the day
       id = getIdForType('Day', new Date(task.date));
 
@@ -354,32 +350,14 @@ export default function ContextProvider({
 
       //if it exists
       if (targetDay) {
-        console.log(
-          'deleteTask.comprobation -> ' +
-            'entered targetDay if with value: ' +
-            JSON.stringify(targetDay),
-        );
-
         //get id for task
         id = getIdForType('Task', new Date(task.date), task.name);
-
-        console.log('deleteTask.comprobation -> ' + 'id of Task: ' + id);
 
         //search for the task
         targetTask = targetDay.tasks?.find(task => task.id === id);
 
-        console.log(
-          'deleteTask.comprobation -> ' +
-            'targetTask fetched with value: ' +
-            JSON.stringify(targetTask),
-        );
         //if it exists
         if (targetTask) {
-          console.log(
-            'deleteTask.comprobation -> ' +
-              'entered targetTask if with value: ' +
-              JSON.stringify(targetTask),
-          );
           //
           //the indexes are fetched before the modifications so they can be found, because once after modifiactions they won't be found
           //
@@ -392,29 +370,13 @@ export default function ContextProvider({
           //targetMonth index
           const monthIndex = months.indexOf(targetMonth);
 
-          console.log(
-            'deleteTask.comprobation -> ' +
-              'fetching indexes: ' +
-              'month: ' +
-              monthIndex +
-              'day: ' +
-              dayIndex +
-              'task: ' +
-              taskIndex,
-          );
-
           //if found
           if (taskIndex != undefined && taskIndex >= 0) {
             //delete Task from targetDay
             targetDay.tasks?.splice(taskIndex, 1);
 
-            console.log('deleteTask.comprobation -> ' + 'entered taskIndex if');
-
             //checking if there are some tasks in that day, because it might be that the deleted task was the only one that existed
             if (targetDay.tasks && targetDay.tasks?.length > 0) {
-              console.log(
-                'deleteTask.comprobation -> ' + 'entered targetDay.tasks if',
-              );
               //update the day from the targetMonth
               targetMonth.days[dayIndex].tasks = targetDay.tasks;
             }
@@ -435,6 +397,10 @@ export default function ContextProvider({
               updatedMonths[monthIndex] = targetMonth;
             }
 
+            //delete the scheduled notification
+            PushNotification.cancelLocalNotification(
+              getIdForType('Notification', task.date, task.name),
+            );
             //activate the flag so it can update the value of months
             setSaveMonthsFlag(true);
             setMonths(updatedMonths);
