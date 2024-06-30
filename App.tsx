@@ -1,10 +1,11 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, SafeAreaView, PermissionsAndroid} from 'react-native';
 import TasksViewComponent from './src/Components/TasksViewComponent';
 import ContextProvider from './src/Context/Context';
 import HeaderComponent from './src/Components/HeaderComponent';
 import CalendarScrollViewComponent from './src/Components/CalendarScrollView';
 import PushNotification from 'react-native-push-notification';
+import LoadingScreen from './src/Components/LoadingComponent';
 
 const requestNotificationPermission = async () => {
   const exists = await PermissionsAndroid.check(
@@ -27,6 +28,9 @@ const requestNotificationPermission = async () => {
 };
 
 const App = () => {
+  //
+  const [loading, setIsLoading] = useState<boolean>(true);
+
   // Function to schedule a local notification (modify notification details as needed)
   requestNotificationPermission();
   // Handle notification channel creation on component mount (Android Oreo+)
@@ -53,12 +57,18 @@ const App = () => {
   return (
     <ContextProvider>
       <SafeAreaView style={styles.container}>
-        {/* Header */}
-        <HeaderComponent />
-        {/* Tasks */}
-        <CalendarScrollViewComponent />
-        {/* Tasks View */}
-        <TasksViewComponent />
+        {loading ? (
+          <LoadingScreen setIsLoading={setIsLoading} />
+        ) : (
+          <>
+            {/* Header */}
+            <HeaderComponent />
+            {/* Tasks */}
+            <CalendarScrollViewComponent />
+            {/* Tasks View */}
+            <TasksViewComponent />
+          </>
+        )}
       </SafeAreaView>
     </ContextProvider>
   );
