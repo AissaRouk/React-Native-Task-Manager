@@ -1,5 +1,4 @@
 import {Month, dayNames, monthNamesEnum} from '../Types/Types';
-import getMonthIndex from './getMonthIndex';
 
 // Function to get the day of the week for a given date
 export default function getDayOfWeek(
@@ -8,10 +7,13 @@ export default function getDayOfWeek(
   day: number,
 ) {
   // Create a new Date object with the given year, month, and day
-  const date = new Date(year, monthIndex - 1, day);
+  const date = new Date(year, monthIndex, day);
+  console.log('DayOfTheWeek.date -> ' + date);
 
   // Get the day of the week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
-  const dayOfWeek = date.getDay();
+  const dayOfWeek: number = date.getDay();
+
+  console.log('DayOfTheWeek -> ' + dayOfWeek);
 
   // Map the day of the week to the corresponding day name
   switch (dayOfWeek) {
@@ -29,7 +31,5 @@ export default function getDayOfWeek(
       return dayNames.FRIDAY;
     case 6:
       return dayNames.SATURDAY;
-    default:
-      return dayNames.MONDAY;
   }
 }
