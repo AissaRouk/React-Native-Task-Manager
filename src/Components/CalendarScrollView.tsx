@@ -14,7 +14,7 @@ export default function CalendarScrollViewComponent() {
   useEffect(() => {
     // Scroll to today's date when the component mounts
     if (scrollViewRef.current && currentMonth && currentDay) {
-      console.log('entered');
+      // console.log('entered');
       const offset = (currentDay.day - 1) * (55 + 16); // Adjust based on your DayComponent's width and margin
       scrollViewRef.current.scrollTo({x: offset, animated: true});
     }
