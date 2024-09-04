@@ -3,6 +3,9 @@ import {ScrollView, StyleSheet} from 'react-native';
 import DayComponent from './DayComponent';
 import {AppContext} from '../Context/Context';
 import getDayOfWeek from '../Utils/getDayOfWeek';
+import getIdForType from '../Utils/getIdForType';
+import getMonthIndex from '../Utils/getMonthIndex';
+import {Day, dayNames} from '../Types/Types';
 
 export default function CalendarScrollViewComponent() {
   const {currentMonth, currentDay} = useContext(AppContext);
@@ -21,6 +24,8 @@ export default function CalendarScrollViewComponent() {
     return null; // Return null if currentMonth is not available
   }
 
+  const monthIndex: number = getMonthIndex(currentMonth);
+
   return (
     <ScrollView
       ref={scrollViewRef}
@@ -32,14 +37,15 @@ export default function CalendarScrollViewComponent() {
         // Calculate the day number
         const dayNumber = index + 1;
         // If the day exists in the month, fetch it, if not create an empty new day
-        const day = currentMonth.days?.find(d => d.day === dayNumber) || {
+        const day: Day = currentMonth.days?.find(d => d.day === dayNumber) || {
           day: dayNumber,
-          dayOfTheWeek: getDayOfWeek(
-            currentMonth.year,
-            currentMonth,
-            dayNumber,
+          dayOfTheWeek:
+            getDayOfWeek(currentMonth.year, monthIndex, dayNumber) ||
+            dayNames.MONDAY,
+          id: getIdForType(
+            'Day',
+            new Date(currentMonth.year, monthIndex, currentDay?.day),
           ),
-          id: dayNumber + ':' + currentMonth.name,
           tasks: [],
         };
 
