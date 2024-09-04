@@ -13,8 +13,6 @@ export default function getDayOfWeek(
   // Get the day of the week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
   const dayOfWeek: number = date.getDay();
 
-  console.log('DayOfTheWeek -> ' + dayOfWeek);
-
   // Map the day of the week to the corresponding day name
   switch (dayOfWeek) {
     case 0:
