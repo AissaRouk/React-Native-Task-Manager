@@ -8,7 +8,6 @@ export default function getDayOfWeek(
 ) {
   // Create a new Date object with the given year, month, and day
   const date = new Date(year, monthIndex, day);
-  console.log('DayOfTheWeek.date -> ' + date);
 
   // Get the day of the week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
   const dayOfWeek: number = date.getDay();
