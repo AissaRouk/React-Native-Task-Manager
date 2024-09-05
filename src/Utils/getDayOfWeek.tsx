@@ -5,7 +5,7 @@ export default function getDayOfWeek(
   year: number,
   monthIndex: number,
   day: number,
-) {
+): dayNames {
   // Create a new Date object with the given year, month, and day
   const date = new Date(year, monthIndex, day);
 
@@ -28,5 +28,7 @@ export default function getDayOfWeek(
       return dayNames.FRIDAY;
     case 6:
       return dayNames.SATURDAY;
+    default:
+      throw new Error('Invalid day of the week'); // Optional: Add a safeguard
   }
 }
