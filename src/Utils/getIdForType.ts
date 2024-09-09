@@ -8,29 +8,36 @@ export default function getIdForType(
   date: Date,
   taskName?: string,
 ): string {
+  console.log(
+    'getIdForType -> date provided: ' +
+      date +
+      ' type of the date: ' +
+      typeof date,
+  );
+
+  var newDate: Date;
+
   if (date == undefined)
     throw new Error('getIdForType -> The date passed is undefined');
-  else if (!(date instanceof Date)) {
-    console.log(
-      'getIdForType -> the date provided is NOT an instanceof Date : ' +
-        typeof date,
-    );
+  else if (typeof date == 'string') {
+    newDate = new Date(date);
+  } else if (date instanceof Object) {
+    newDate = date;
+  } else {
+    throw new Error('getIdForType -> The date passed is not a Date object');
   }
 
   switch (type) {
     case 'Task':
       // Return ID based on task date time (hours, minutes, seconds)
-      return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}:${taskName}`;
+      return `${newDate.getHours()}:${newDate.getMinutes()}:${newDate.getSeconds()}:${taskName}`;
     case 'Month':
-      console.log('getIdForType.Month -> date: ' + JSON.stringify(date)) +
-        'fullYear: ' +
-        date.getFullYear();
-      return `${getMonthName(date)}:${date.getFullYear()}`;
+      return `${getMonthName(date)}:${newDate.getFullYear()}`;
     case 'Day':
       // Return ID based on day and month (1-based indexing for month)
-      return `${date.getDate()}:${date.getMonth() + 1}`;
+      return `${newDate.getDate()}:${newDate.getMonth() + 1}`;
     case 'Notification':
-      return `${taskName}:${date.getTime()}`;
+      return `${taskName}:${newDate.getTime()}`;
     default:
       // Throw an error indicating an unsupported type
       throw new Error('Unsupported type provided to getIdForType function');

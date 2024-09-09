@@ -7,6 +7,7 @@ import PushNotification from 'react-native-push-notification';
 import getMonthName from '../Utils/getMonthName';
 import getMonthIndex from '../Utils/getMonthIndex';
 import getIdForType from '../Utils/getIdForType';
+import {ChannelId} from '../../App';
 
 export interface AppContextType {
   months: Month[];
@@ -177,7 +178,7 @@ export default function ContextProvider({
         tasks: [],
         dayOfTheWeek: getDayOfWeek(
           currentMonth.year,
-          currentMonth.name,
+          getMonthIndex(currentMonth),
           currentDate.getDate(),
         ),
       };
@@ -220,7 +221,7 @@ export default function ContextProvider({
    */
   const addTask = (taskName: string, taskContent: string, date: Date) => {
     //checking if params are correct
-    if (!taskName || !taskContent || !date) {
+    if (!taskName || !date) {
       console.error('Context.addTask: taskName or taskContent are undefined');
       return;
     }
@@ -312,11 +313,18 @@ export default function ContextProvider({
     //trigger the saveMonths in the useEffect to save the new state of months
     setSaveMonthsFlag(true);
 
-    PushNotification.localNotificationSchedule({
+    console.log(
+      'adding notification for task: -> ' +
+        taskName +
+        ' -> on Date: ' +
+        date.getHours() +
+        ':' +
+        date.getMinutes(),
+    );
+    PushNotification.localNotification({
       message: 'You have ' + taskName + ' now',
       title: "Task '" + taskName + "'",
-      channelId: 'notification',
-      date: date,
+      channelId: ChannelId,
       id: getIdForType('Notification', date, taskName),
     });
   };
