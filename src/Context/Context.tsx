@@ -343,7 +343,7 @@ export default function ContextProvider({
     //comprobating that it is a date
 
     //get the id for the month
-    var id: string = getIdForType('Month', new Date(task.date));
+    var id: string = getIdForType('Month', task.date);
 
     //searching for the Task's month
     targetMonth = months.find(month => month.id === id);
@@ -351,7 +351,7 @@ export default function ContextProvider({
     //if targetMonth != undefined
     if (targetMonth) {
       //get the id for the day
-      id = getIdForType('Day', new Date(task.date));
+      id = getIdForType('Day', task.date);
 
       //find the targetDay
       targetDay = targetMonth.days.find(day => day.id === id);
@@ -359,7 +359,7 @@ export default function ContextProvider({
       //if it exists
       if (targetDay) {
         //get id for task
-        id = getIdForType('Task', new Date(task.date), task.name);
+        id = getIdForType('Task', task.date, task.name);
 
         //search for the task
         targetTask = targetDay.tasks?.find(task => task.id === id);
