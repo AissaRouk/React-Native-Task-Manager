@@ -7,6 +7,8 @@ import CalendarScrollViewComponent from './src/Components/CalendarScrollView';
 import PushNotification from 'react-native-push-notification';
 import LoadingScreen from './src/Components/LoadingComponent';
 
+export const ChannelId: string = 'channelId';
+
 const requestNotificationPermission = async () => {
   const exists = await PermissionsAndroid.check(
     PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
@@ -40,7 +42,7 @@ const App = () => {
     //create a newChanner if it doesn't exist already
     PushNotification.createChannel(
       {
-        channelId: 'notification',
+        channelId: ChannelId,
         channelName: 'My Notification Channel',
         channelDescription: 'A channel for scheduled notifications',
         importance: 4, // Importance level (HIGH in this case),
