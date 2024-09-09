@@ -29,6 +29,6 @@ export default function getDayOfWeek(
     case 6:
       return dayNames.SATURDAY;
     default:
-      throw new Error('Invalid day of the week'); // Optional: Add a safeguard
+      throw new Error('getDayOfWeek -> Invalid day of the week'); // Optional: Add a safeguard
   }
 }
