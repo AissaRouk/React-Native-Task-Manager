@@ -33,6 +33,7 @@ export default function ModalOptionsComponent({
           <TouchableOpacity
             onPress={() => {
               setModalAddTaskVisibility(true);
+              setModalVisibility(false);
             }}
             style={[styles.buttonContainer, {marginBottom: 10}]}>
             <Text>Edit Task</Text>
