@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Modal,
   Text,
@@ -13,21 +13,37 @@ import {AppContext} from '../Context/Context';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
+import {Task} from '../Types/Types';
 
 export default function AddTaskModal({
   visible,
   setModalShown,
+  option,
+  task,
 }: {
   visible: boolean;
   setModalShown: (visibility: boolean) => void;
+  option: 'add' | 'edit';
+  task?: Task;
 }) {
-  const {addTask} = useContext(AppContext);
+  const {addTask, editTask} = useContext(AppContext);
   const [taskName, setTaskName] = useState<string>('');
   const [taskContent, setTaskContent] = useState<string>('');
   const [date, setDate] = useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
   const [selectedTime, setSelectedTime] = useState<Date>(new Date());
+
+  useEffect(() => {
+    //checking if the edit option is on and because if it is, the data needs to be already filled in the TextInputs
+    if (option == 'edit' && task) {
+      setTaskName(task.name);
+      setTaskContent(task.content);
+      setDate(new Date(task.date));
+      setSelectedTime(new Date(task.date));
+    } else if (!task)
+      new Error('AddTaskModal -> The task passed is undefined!!');
+  }, [, task]);
 
   const handleOnPress = () => {
     if (!taskName) {
@@ -45,11 +61,19 @@ export default function AddTaskModal({
         selectedTime.getHours(),
         selectedTime.getMinutes(),
       );
-
-      // Add the task with the combined date and time
-      addTask(taskName, taskContent, selectedDateTime);
-
-      // Close the modal
+      if (option == 'add')
+        // Add the task with the combined date and time
+        addTask(taskName, taskContent, selectedDateTime);
+      else {
+        //edit the task
+        editTask({
+          id: task!.id,
+          name: taskName,
+          content: taskContent,
+          date: task!.date,
+        });
+      }
+      //then hide the modal
       setModalShown(false);
 
       // Empty the TextInputs
@@ -102,6 +126,7 @@ export default function AddTaskModal({
             placeholder="Description"
             multiline={true}
             style={styles.input}
+            value={taskContent}
             onChangeText={setTaskContent}
           />
           {/* Date Picker */}
