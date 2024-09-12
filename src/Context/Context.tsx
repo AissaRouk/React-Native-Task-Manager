@@ -23,6 +23,16 @@ export interface AppContextType {
    * Function that deletes a specific Task
    */
   deleteTask: (task: Task) => void;
+  /***
+   * Function that deletes a specific Task
+   */
+  editTask: (task: Task) => void;
+  /**
+   * Function that returns the
+   * @param name
+   * @param monthIndex
+   * @returns
+   */
   getMonth: (name: monthNamesEnum, monthIndex: number) => void;
 }
 
@@ -39,6 +49,7 @@ export const AppContext = createContext<AppContextType>({
    */
   deleteTask: () => {},
   getMonth: () => {},
+  editTask: () => {},
 });
 
 export default function ContextProvider({
@@ -420,6 +431,96 @@ export default function ContextProvider({
     console.error('Context.js - deleteTask -> Error in deleteTask ');
   };
 
+  /**
+   *
+   */
+  const editTask = (task: Task) => {
+    if (!task) throw console.error('Context.deleteTask -> task is undefined');
+
+    //creating variables
+    var targetTask: Task | undefined,
+      targetDay: Day | undefined,
+      targetMonth: Month | undefined;
+
+    //comprobating that it is a date
+
+    //get the id for the month
+    var id: string = getIdForType('Month', task.date);
+
+    //searching for the Task's month
+    targetMonth = months.find(month => month.id === id);
+    console.log(
+      'editTask -> targetMonth found: ' + JSON.stringify(targetMonth),
+    );
+
+    //if targetMonth != undefined
+    if (targetMonth) {
+      //get the id for the day
+      id = getIdForType('Day', task.date);
+
+      //find the targetDay
+      targetDay = targetMonth.days.find(day => day.id === id);
+      console.log('editTask -> targetDAy found: ' + JSON.stringify(targetDay));
+      //if it exists
+      if (targetDay) {
+        //get id for task
+        id = getIdForType('Task', task.date, task.name);
+
+        //search for the task
+        targetTask = targetDay.tasks?.find(task => task.id === id);
+        console.log('editTask -> task found: ' + JSON.stringify(task));
+
+        //if it exists
+        if (targetTask && task != targetTask) {
+          //
+          //the indexes are fetched before the modifications so they can be found, because once after modifiactions they won't be found
+          //
+          //search for it's index to be edited easily
+          const taskIndex = targetDay.tasks?.indexOf(targetTask);
+
+          //search the day in the targetMonth
+          const dayIndex = targetMonth.days.indexOf(targetDay);
+
+          //targetMonth index
+          const monthIndex = months.indexOf(targetMonth);
+
+          console.log(
+            'editTask ->  monthIndex:' +
+              monthIndex +
+              'dayIndex:' +
+              dayIndex +
+              'taskIndex: ' +
+              taskIndex,
+          );
+
+          //if found
+          if (taskIndex != undefined && taskIndex >= 0) {
+            console.log('editTask -> entered on the if ');
+
+            //delete Task from targetDay
+            targetDay.tasks![taskIndex] = task;
+
+            //update the day from the targetMonth
+            targetMonth.days[dayIndex].tasks = targetDay.tasks;
+
+            //create the new Months
+            var updatedMonths: Month[];
+
+            //update the new Months
+            updatedMonths = months;
+            updatedMonths[monthIndex] = targetMonth;
+
+            //activate the flag so it can update the value of months
+            setSaveMonthsFlag(true);
+            setMonths(updatedMonths);
+            return;
+          }
+        }
+      }
+    }
+    console.error('Context.js - editTask -> Error in editTask ');
+  };
+
   const saveMonths = async () => {
     console.log(
       'saveMonths -> saving this state of months: ' + JSON.stringify(months),
@@ -442,6 +543,7 @@ export default function ContextProvider({
     setCurrentDay,
     addTask,
     deleteTask,
+    editTask,
     getMonth,
   };
 
