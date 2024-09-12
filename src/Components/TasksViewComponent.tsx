@@ -10,6 +10,7 @@ import {AppContext} from '../Context/Context';
 export default function TasksViewComponent() {
   const {currentDay} = useContext(AppContext);
   const [modalShown, setModalShown] = useState<boolean>(false);
+  const [option, setOption] = useState<'add' | 'edit'>('add');
 
   useEffect(
     () => console.log('TasksViewComponent -> currentDay has changed'),
@@ -26,7 +27,11 @@ export default function TasksViewComponent() {
         borderTopRightRadius: 30,
         borderTopLeftRadius: 30,
       }}>
-      <AddTaskModal visible={modalShown} setModalShown={setModalShown} />
+      <AddTaskModal
+        visible={modalShown}
+        setModalShown={setModalShown}
+        option={option}
+      />
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text
           style={{
