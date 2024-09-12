@@ -10,9 +10,13 @@ import {
 import getRandomColor from '../Utils/getRandomColor';
 import {Task} from '../Types/Types';
 import ModalOptionsComponent from './ModalOptionsComponents';
+import AddTaskModal from './AddTaskModal';
 
 export default function TaskComponent({task}: {task: Task}) {
   const [modalVisibility, setModalVisibility] = useState<boolean>(false);
+  const [modalAddTaskVisibility, setModalAddTaskVisibility] =
+    useState<boolean>(false);
+
   const backgroundColor = getRandomColor();
 
   // Function to format time as hh:mm
@@ -32,6 +36,13 @@ export default function TaskComponent({task}: {task: Task}) {
         <ModalOptionsComponent
           modalVisibility={modalVisibility}
           setModalVisibility={setModalVisibility}
+          task={task}
+          setModalAddTaskVisibility={setModalAddTaskVisibility}
+        />
+        <AddTaskModal
+          visible={modalAddTaskVisibility}
+          setModalShown={setModalAddTaskVisibility}
+          option="edit"
           task={task}
         />
         <View style={[styles.taskView, {backgroundColor}]}>
