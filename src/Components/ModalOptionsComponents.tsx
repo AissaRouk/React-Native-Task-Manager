@@ -1,18 +1,22 @@
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Task} from '../Types/Types';
-import {useContext} from 'react';
+import {useContext, useState} from 'react';
 import {AppContext} from '../Context/Context';
+import AddTaskModal from './AddTaskModal';
 
 export default function ModalOptionsComponent({
   modalVisibility,
   setModalVisibility,
   task,
+  setModalAddTaskVisibility,
 }: {
   modalVisibility: boolean;
   setModalVisibility: (modalVisibility: boolean) => void;
   task: Task;
+  setModalAddTaskVisibility: (visibility: boolean) => void;
 }) {
   const {deleteTask} = useContext(AppContext);
+
   return (
     <Modal visible={modalVisibility} transparent={true}>
       <View style={styles.modalContainer}>
@@ -27,12 +31,20 @@ export default function ModalOptionsComponent({
             <Text>Delete Task</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => {
+              setModalAddTaskVisibility(true);
+            }}
+            style={[styles.buttonContainer, {marginBottom: 10}]}>
+            <Text>Edit Task</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => setModalVisibility(false)}
             style={styles.buttonContainer}>
             <Text>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
+      {/* Added the modal of the edit option so it can pop-up whenever editing is needed */}
     </Modal>
   );
 }
