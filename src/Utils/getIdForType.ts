@@ -8,13 +8,6 @@ export default function getIdForType(
   date: Date,
   taskName?: string,
 ): string {
-  console.log(
-    'getIdForType -> date provided: ' +
-      date +
-      ' type of the date: ' +
-      typeof date,
-  );
-
   var newDate: Date;
 
   if (date == undefined)
