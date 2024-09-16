@@ -15,7 +15,7 @@ export default function ModalOptionsComponent({
   task: Task;
   setModalAddTaskVisibility: (visibility: boolean) => void;
 }) {
-  const {deleteTask} = useContext(AppContext);
+  const {deleteTask, markTaskAsCompleted} = useContext(AppContext);
 
   return (
     <Modal visible={modalVisibility} transparent={true}>
@@ -23,12 +23,12 @@ export default function ModalOptionsComponent({
         <View style={styles.modalContent}>
           <Text style={styles.title}>Options</Text>
           <TouchableOpacity
+            style={[styles.buttonContainer, {marginBottom: 10}]}
             onPress={() => {
-              deleteTask(task);
+              markTaskAsCompleted(task);
               setModalVisibility(false);
-            }}
-            style={[styles.buttonContainer, {marginBottom: 10}]}>
-            <Text>Delete Task</Text>
+            }}>
+            <Text>Task Completed</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -37,6 +37,14 @@ export default function ModalOptionsComponent({
             }}
             style={[styles.buttonContainer, {marginBottom: 10}]}>
             <Text>Edit Task</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              deleteTask(task);
+              setModalVisibility(false);
+            }}
+            style={[styles.buttonContainer, {marginBottom: 10}]}>
+            <Text>Delete Task</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setModalVisibility(false)}
