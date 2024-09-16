@@ -3,6 +3,7 @@ export interface Task {
   name: string;
   date: Date;
   content: string;
+  completed: boolean;
 }
 
 export interface Day {
