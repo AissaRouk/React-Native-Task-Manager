@@ -76,8 +76,8 @@ export default function ContextProvider({
   //initialize the months
   useEffect(() => {
     //obtener el months guardado
-    initializeMonths();
-    // deleteMonths();
+    // initializeMonths();
+    deleteMonths();
   }, []);
 
   useEffect(() => {
@@ -243,6 +243,7 @@ export default function ContextProvider({
       content: taskContent,
       id: getIdForType('Task', date, taskName),
       date: date,
+      completed: false,
     };
 
     //checking if the month of the tasks' date exists in "months"
@@ -342,6 +343,7 @@ export default function ContextProvider({
 
   /***
    * Function that deletes a specific Task
+   * @param {Task} task new task with the new information
    */
   const deleteTask = (task: Task) => {
     if (!task) throw console.error('Context.deleteTask -> task is undefined');
@@ -432,7 +434,8 @@ export default function ContextProvider({
   };
 
   /**
-   *
+   *Function that edits a specific Task
+   *@param {Task} task new task with the edited information
    */
   const editTask = (task: Task) => {
     if (!task) throw console.error('Context.deleteTask -> task is undefined');
