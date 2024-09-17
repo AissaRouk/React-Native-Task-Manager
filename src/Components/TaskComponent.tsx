@@ -1,12 +1,5 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Modal,
-  Alert,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import getRandomColor from '../Utils/getRandomColor';
 import {Task} from '../Types/Types';
 import ModalOptionsComponent from './ModalOptionsComponents';
@@ -32,7 +25,11 @@ export default function TaskComponent({task}: {task: Task}) {
 
   return (
     <TouchableWithoutFeedback onLongPress={() => setModalVisibility(true)}>
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          task.completed && styles.completedTaskContainer, // Apply different styles if completed
+        ]}>
         <ModalOptionsComponent
           modalVisibility={modalVisibility}
           setModalVisibility={setModalVisibility}
@@ -46,8 +43,20 @@ export default function TaskComponent({task}: {task: Task}) {
           task={task}
         />
         <View style={[styles.taskView, {backgroundColor}]}>
-          <Text style={styles.title}>{task.name}</Text>
-          <Text style={styles.content}>{task.content}</Text>
+          <Text
+            style={[
+              styles.title,
+              task.completed && styles.completedText, // Strike through if completed
+            ]}>
+            {task.name}
+          </Text>
+          <Text
+            style={[
+              styles.content,
+              task.completed && styles.completedText, // Strike through if completed
+            ]}>
+            {task.content}
+          </Text>
         </View>
         <View style={styles.timeView}>
           <View style={[styles.dot, {backgroundColor}]} />
@@ -70,6 +79,9 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 20,
     maxWidth: '75%',
+    minWidth: '40%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontFamily: 'Gilroy-SemiBold',
@@ -98,5 +110,13 @@ const styles = StyleSheet.create({
   timeText: {
     fontFamily: 'Gilroy-SemiBold',
     fontSize: 15,
+  },
+  // Style for completed tasks
+  completedText: {
+    textDecorationLine: 'line-through',
+    color: 'gray',
+  },
+  completedTaskContainer: {
+    opacity: 0.6, // Dimming the container for a completed task
   },
 });
