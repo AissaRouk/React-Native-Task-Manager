@@ -121,7 +121,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-        implementation project(':react-native-push-notification')
         implementation fileTree(dir: "libs", include: ["*.jar"])
         implementation "com.facebook.react:react-native:+"  // From node_modules
         implementation project(':react-native-vector-icons')

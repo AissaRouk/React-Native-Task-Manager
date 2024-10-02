@@ -2,8 +2,6 @@ rootProject.name = 'ReactNativeTaskManager'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
-include ':react-native-push-notification'
-project(':react-native-push-notification').projectDir = file('../node_modules/react-native-push-notification/android')
 
 //rn-vector-icons
 include ':react-native-vector-icons'
