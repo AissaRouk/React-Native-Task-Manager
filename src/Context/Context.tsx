@@ -339,6 +339,12 @@ export default function ContextProvider({
         ':' +
         date.getMinutes(),
     );
+    PushNotification.channelExists(ChannelId, exists =>
+      console.log('ChannelId exists: ' + exists),
+    );
+    PushNotification.checkPermissions(permissions =>
+      console.log('checking permissions: ' + JSON.stringify(permissions)),
+    );
     PushNotification.localNotification({
       message: 'You have ' + taskName + ' now',
       title: "Task '" + taskName + "'",
