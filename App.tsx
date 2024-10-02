@@ -51,9 +51,6 @@ const App = () => {
         console.log('Notification channel: ' + created);
       },
     );
-
-    // Schedule the notification after creating the channel
-    // scheduleLocalNotification();
   }, []);
 
   return (
